@@ -32,56 +32,32 @@ class FocusOnContentType extends BeanPlugin {
    */
 
   public function form($bean, $form, &$form_state) {
-    //  dpm($bean);
     $form = array();
-    //    $form['#tree'] = TRUE;
     $form['settings'] = array(
       '#type' => 'fieldset',
       '#tree' => 1,
       '#title' => t('Output Form'),
     );
-
-    // check for the content type
-//     original correct code
-//     $type = $node->type;
-//     $types = node_type_get_types();
-//     $name = $types[$type]->name;
-//     $description = $types[$type]->description
-
-//    $node = menu_get_object();
-//    dpm($node);
-//    $type = $node;
-
-    //$type = array();
     $list_of_content_type = array();
     $types = node_type_get_types();
     foreach ($types as $type ) {
       $list_of_content_type[$type->name] = $type->name;
     }
-   // dpm($list_of_content_type);
-
-    // get the view mode, and setto custom variable $node_view_mode
     $node_view_mode = array();
     $entity_info =  entity_get_info();
     foreach ($entity_info['node']['view modes'] as $key => $value){
       print_r("the key vale is ", $key);
-      // get the name of view mode and store in new var
       $node_view_mode[$key] = $value['label'];
     }
-    //if the view is not set default to full
     if(!isset($bean->settings['node_view_mode'])){
       $default_node_view_mode = 'full';
     }
     else{
       $default_node_view_mode = $bean->settings['node_view_mode'];
     }
-
-    //check for the size of node to render
     if(!$records_shown = $bean->settings['records_shown']){
       $records_shown = 5;
     }
-
-
 
     //create the form value
     $form['settings']['node_view_mode'] = array(
@@ -127,17 +103,10 @@ class FocusOnContentType extends BeanPlugin {
       '#title' => t('URL to link with the text'),
       '#default_value' => $bean->more_link['path'],
     );
-    $test= array();
-
     return array_merge(parent::values(),$form);
-
-    //  return array_merge(parent::values(), $custom_setting_value);
-//    return parent::form($bean, $form, $form_state);
   }
 
   public function view($bean, $content, $view_mode = 'default', $langcode = NULL) {
-    dpm($bean);
-    dpm($bean->content_type['type']);
     $query = new EntityFieldQuery();
     $query
       ->entityCondition('entity_type', 'node')
@@ -146,7 +115,6 @@ class FocusOnContentType extends BeanPlugin {
       ->propertyOrderBy('created', 'DESC')
       ->range(0, $bean->settings['records_shown']);
     $results = $query->execute();
-   // dpm($content);
     if(empty($results)){
       $content['node'] = array();
     }
@@ -156,16 +124,9 @@ class FocusOnContentType extends BeanPlugin {
         $content['nodes'][$node->nid] = node_view($node,$bean->settings['node_view_mode']);
       }
     }
-   // dpm($content);
     $content['more_link']['#markup'] = theme('focusOnMoreLink', array('text'=>$bean->more_link['text'],
                                                                             'path'=>$bean->more_link['path']));
-
-
-//    $content['more_link']['#markup'] = theme('article_listing_more_link', array('text' => $bean->more_link['text'],
-//                                                                                      'path' => $bean->more_link['path']));
-//
     return $content;
-//    return parent::view($bean, $content, $view_mode, $langcode);
   }
 }
 

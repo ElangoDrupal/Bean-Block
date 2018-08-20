@@ -26,7 +26,6 @@ function bean_focus_on_bean_types() {
   return $plugins;
 }
 
-
 /**
  * Implements hook_theme().
  */
@@ -45,6 +44,5 @@ function bean_focus_on_theme() {
     ],
     'file' => 'bean_focus_on.theme.inc'
   ];
-  dpm($items);
   return $items;
 }
