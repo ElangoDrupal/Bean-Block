@@ -92,6 +92,7 @@ class FocusOnContentType extends BeanPlugin {
       '#type' => 'select',
       '#title' => t('Select the content type to display'),
       '#options' => $list_of_content_type,
+      '#default_value' => $bean->content_type['type'],
       '#required' => TRUE,
       '#multiple' => TRUE,
     );
@@ -102,12 +103,12 @@ class FocusOnContentType extends BeanPlugin {
     );
     $form['more_link']['text'] = array(
       '#type' => 'textfield',
-      '#title' => t('Text to show att he bottom'),
+      '#title' => t('Text to Show at Bottom of the Block'),
       '#default_value' => $bean->more_link['text'],
     );
     $form['more_link']['path'] = array(
       '#type' => 'textfield',
-      '#title' => t('URL to link with the text'),
+      '#title' => t('URL to link with the Above Text'),
       '#default_value' => $bean->more_link['path'],
     );
     $form['#submit'][] = 'bean_custom_content_display_clear_cache';
