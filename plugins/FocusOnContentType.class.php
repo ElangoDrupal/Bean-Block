@@ -10,11 +10,11 @@ class FocusOnContentType extends BeanPlugin {
    * Decalare default bloc setting
    */
   public function values() {
-    // add new array of setting to the $bean variable
     $custom_setting_value = array (
       'settings' => array(
         'node_view_mode' => FALSE,
         'records_shown' => FALSE,
+        'cache_duration' => '30',
       ),
       'more_link' => array(
         'text' => '',
@@ -30,7 +30,6 @@ class FocusOnContentType extends BeanPlugin {
   /*
    * Building extra setting for edit form
    */
-
   public function form($bean, $form, &$form_state) {
     $form = array();
     $form['settings'] = array(
@@ -75,6 +74,14 @@ class FocusOnContentType extends BeanPlugin {
       '#size' => 5,
       '#default_value' => $records_shown,
     );
+    $form['settings']['cache_duration'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Cache Duration in Minutes'),
+      '#size' => 5,
+      '#default_value' => $bean->settings['cache_duration'],
+      '#required' => TRUE,
+    );
+
 
     $form['content_type'] = array(
       '#type'  => 'fieldset',
@@ -103,18 +110,35 @@ class FocusOnContentType extends BeanPlugin {
       '#title' => t('URL to link with the text'),
       '#default_value' => $bean->more_link['path'],
     );
+    $form['#submit'][] = 'bean_custom_content_display_clear_cache';
     return array_merge(parent::values(),$form);
   }
 
+  /**
+   * @param $bean
+   * @param $content
+   * @param string $view_mode
+   * @param null $langcode
+   *
+   * @return mixed
+   * @throws \Exception
+   */
   public function view($bean, $content, $view_mode = 'default', $langcode = NULL) {
-    $query = new EntityFieldQuery();
-    $query
-      ->entityCondition('entity_type', 'node')
-      ->entityCondition('bundle', $bean->content_type['type'])
-      ->propertyCondition('status', 1)
-      ->propertyOrderBy('created', 'DESC')
-      ->range(0, $bean->settings['records_shown']);
-    $results = $query->execute();
+
+    if($cache = cache_get('bean_custom_content_display')){
+      $results =  $cache->data;
+    }
+    else {
+      $query = new EntityFieldQuery();
+      $query
+        ->entityCondition('entity_type', 'node')
+        ->entityCondition('bundle', $bean->content_type['type'])
+        ->propertyCondition('status', 1)
+        ->propertyOrderBy('created', 'DESC')
+        ->range(0, $bean->settings['records_shown']);
+      $results = $query->execute();
+      cache_set('bean_custom_content_display',$results,'cache',time()+60* $bean->settings['cache_duration']);
+    }
     if(empty($results)){
       $content['node'] = array();
     }
