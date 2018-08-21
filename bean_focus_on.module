@@ -48,3 +48,8 @@ function bean_focus_on_theme() {
   dpm($items);
   return $items;
 }
+
+function bean_custom_content_display_clear_cache(&$form){
+  cache_clear_all('bean_custom_content_display', 'cache');
+
+}

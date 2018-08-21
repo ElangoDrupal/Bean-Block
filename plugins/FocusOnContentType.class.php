@@ -15,6 +15,7 @@ class FocusOnContentType extends BeanPlugin {
       'settings' => array(
         'node_view_mode' => FALSE,
         'records_shown' => FALSE,
+        'cache_duration' => '30',
       ),
       'more_link' => array(
         'text' => '',
@@ -81,8 +82,6 @@ class FocusOnContentType extends BeanPlugin {
       $records_shown = 5;
     }
 
-
-
     //create the form value
     $form['settings']['node_view_mode'] = array(
       '#type' => 'select',
@@ -99,6 +98,15 @@ class FocusOnContentType extends BeanPlugin {
       '#size' => 5,
       '#default_value' => $records_shown,
     );
+    dpm($bean->settings['cache_duration']);
+    $form['settings']['cache_duration'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Cache Duration in Minutes'),
+      '#size' => 5,
+      '#default_value' => $bean->settings['cache_duration'],
+      '#required' => TRUE,
+    );
+
 
     $form['content_type'] = array(
       '#type'  => 'fieldset',
@@ -127,7 +135,8 @@ class FocusOnContentType extends BeanPlugin {
       '#title' => t('URL to link with the text'),
       '#default_value' => $bean->more_link['path'],
     );
-    $test= array();
+
+    $form['#submit'][] = 'bean_custom_content_display_clear_cache';
 
     return array_merge(parent::values(),$form);
 
@@ -135,17 +144,35 @@ class FocusOnContentType extends BeanPlugin {
 //    return parent::form($bean, $form, $form_state);
   }
 
+  /**
+   * @param $bean
+   * @param $content
+   * @param string $view_mode
+   * @param null $langcode
+   *
+   * @return mixed
+   * @throws \Exception
+   */
   public function view($bean, $content, $view_mode = 'default', $langcode = NULL) {
     dpm($bean);
     dpm($bean->content_type['type']);
-    $query = new EntityFieldQuery();
-    $query
-      ->entityCondition('entity_type', 'node')
-      ->entityCondition('bundle', $bean->content_type['type'])
-      ->propertyCondition('status', 1)
-      ->propertyOrderBy('created', 'DESC')
-      ->range(0, $bean->settings['records_shown']);
-    $results = $query->execute();
+
+    if($cache = cache_get('bean_custom_content_display')){
+      $results =  $cache->data;
+      print_r('inside cache result page');
+    }
+    else {
+      $query = new EntityFieldQuery();
+      $query
+        ->entityCondition('entity_type', 'node')
+        ->entityCondition('bundle', $bean->content_type['type'])
+        ->propertyCondition('status', 1)
+        ->propertyOrderBy('created', 'DESC')
+        ->range(0, $bean->settings['records_shown']);
+      $results = $query->execute();
+      cache_set('bean_custom_content_display',$results,'cache',time()+60* $bean->settings['cache_duration']);
+      print_r("call the db query ");
+    }
    // dpm($content);
     if(empty($results)){
       $content['node'] = array();
@@ -164,6 +191,8 @@ class FocusOnContentType extends BeanPlugin {
 //    $content['more_link']['#markup'] = theme('article_listing_more_link', array('text' => $bean->more_link['text'],
 //                                                                                      'path' => $bean->more_link['path']));
 //
+//    cache_set('bean_tweets-' . $bean->settings['handle'], $tweets, 'cache', time() + 60 * $bean->settings['cache_duration']);
+
     return $content;
 //    return parent::view($bean, $content, $view_mode, $langcode);
   }
