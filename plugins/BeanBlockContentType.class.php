@@ -106,8 +106,6 @@ class BeanBlockContentType extends BeanPlugin {
       '#states' => array(
         'checked' => array(
           ':input[NAME="more_link[text]"]' => array('filled' => TRUE),
-   //       ':input[id=edit-more-link-text]' => array(isset($form_state['more_link']['text'])),
-  //        "input[name='text']" => array('empty' => FALSE),
         ),
         'collapsed' => array(
           "input[id='edit-more-link-select']" => array("filled" => FALSE),
@@ -121,11 +119,7 @@ class BeanBlockContentType extends BeanPlugin {
       '#states' => array(
         'invisible' => array(
           ':input[id=edit-more-link-select]' => array("checked" => FALSE),
-//          "input[name='select']" => array("checked" => FALSE),
         ),
-//        'collapsed' => array(
-//          "input[id='edit-more-link-select']" => array("checked" => FALSE),
-//        ),
       ),
       '#title' => t('Text to Show at Bottom of the Block'),
       '#default_value' => $bean->more_link['text'],
@@ -140,9 +134,6 @@ class BeanBlockContentType extends BeanPlugin {
         'visible' => array(
          "input[id='edit-more-link-select']" => array("checked" => TRUE),
         ),
-//        'collapsed' => array(
-//          "input[id='edit-more-link-select']" => array("checked" => TRUE),
-//        ),
       ),
     );
     $form['#submit'][] = 'bean_custom_content_display_clear_cache';
