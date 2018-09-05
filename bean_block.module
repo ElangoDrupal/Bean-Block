@@ -3,25 +3,25 @@
 /**
  * Implements hook_bean_types_api_info().
  */
-function bean_focus_on_bean_types_api_info(){
+function bean_block_bean_types_api_info(){
   return array('api' => 4);
 }
 
 /**
  * Implements hook_bean_types().
  */
-function bean_focus_on_bean_types() {
+function bean_block_bean_types() {
   $plugins = array();
-  $plugins_path = drupal_get_path('module', 'bean_focus_on').'/plugins';
+  $plugins_path = drupal_get_path('module', 'bean_block').'/plugins';
   $plugins['focus_on'] = array(
-    'label' => t('Focus ON block'),
-    'description' => t('Focus on module get the content type as Focus ON for test use article'),
+    'label' => t('Bean Block'),
+    'description' => t('Content Type for bean_block'),
     'handler' => array(
-      'class' => 'FocusOnContentType',
+      'class' => 'BeanBlockContentType',
       'parent' => 'bean',
     ),
     'path' => $plugins_path,
-    'file' => 'FocusOnContentType.class.php',
+    'file' => 'BeanBlockContentType.class.php',
   );
   return $plugins;
 }
@@ -29,20 +29,20 @@ function bean_focus_on_bean_types() {
 /**
  * Implements hook_theme().
  */
-function bean_focus_on_theme() {
+function bean_block_theme() {
   $items = [];
-  $items['bean_focus_on_settings'] = [
+  $items['bean_block_settings'] = [
     'arguments' => [
       'records_shown' => NULL,
     ],
-    'file' => 'bean_focus_on.theme.inc',
+    'file' => 'bean_block.theme.inc',
   ];
-  $items['focusOnMoreLink'] = [
+  $items['BeanBlockMoreLink'] = [
     'arguments' => [
       'text' => NULL,
       'path' => NULL,
     ],
-    'file' => 'bean_focus_on.theme.inc'
+    'file' => 'bean_block.theme.inc'
   ];
   return $items;
 }

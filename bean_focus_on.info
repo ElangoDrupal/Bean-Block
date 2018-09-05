@@ -1,5 +1,0 @@
-name = Bean module for the focus on
-description =  Custom module for the focus on region
-core = 7.x
-dependencies[] = bean
-package = bean

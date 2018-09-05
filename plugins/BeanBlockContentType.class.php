@@ -4,7 +4,7 @@
  * Focus on Block Plugin
  */
 
-class FocusOnContentType extends BeanPlugin {
+class BeanBlockContentType extends BeanPlugin {
 
   /*
    * Decalare default bloc setting
@@ -45,7 +45,6 @@ class FocusOnContentType extends BeanPlugin {
     $node_view_mode = array();
     $entity_info =  entity_get_info();
     foreach ($entity_info['node']['view modes'] as $key => $value){
-      print_r("the key vale is ", $key);
       $node_view_mode[$key] = $value['label'];
     }
     if(!isset($bean->settings['node_view_mode'])){
@@ -184,7 +183,7 @@ class FocusOnContentType extends BeanPlugin {
         $content['nodes'][$node->nid] = node_view($node,$bean->settings['node_view_mode']);
       }
     }
-    $content['more_link']['#markup'] = theme('focusOnMoreLink', array('text'=>$bean->more_link['text'],
+    $content['more_link']['#markup'] = theme('BeanBlockMoreLink', array('text'=>$bean->more_link['text'],
                                                                             'path'=>$bean->more_link['path']));
     return $content;
   }

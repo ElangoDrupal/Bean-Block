@@ -1,0 +1,5 @@
+name = Bean Block
+description =  Bean Block module create custom block using Bean Api
+core = 7.x
+dependencies[] = bean
+package = bean
