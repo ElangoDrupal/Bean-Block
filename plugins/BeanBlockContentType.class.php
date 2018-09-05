@@ -81,8 +81,6 @@ class FocusOnContentType extends BeanPlugin {
       '#default_value' => $bean->settings['cache_duration'],
       '#required' => TRUE,
     );
-
-
     $form['content_type'] = array(
       '#type'  => 'fieldset',
       '#tree' => 1,
@@ -101,15 +99,52 @@ class FocusOnContentType extends BeanPlugin {
       '#tree' => 1,
       '#title' => t('Add link to the bottom'),
     );
+    $form['more_link']['select'] = array(
+      '#type' => 'checkbox',
+      '#collapsed' => FALSE,
+      '#collapsible' => TRUE,
+      '#title' => 'Check to enable the Bottom Text & Link',
+      '#states' => array(
+        'checked' => array(
+          ':input[NAME="more_link[text]"]' => array('filled' => TRUE),
+   //       ':input[id=edit-more-link-text]' => array(isset($form_state['more_link']['text'])),
+  //        "input[name='text']" => array('empty' => FALSE),
+        ),
+        'collapsed' => array(
+          "input[id='edit-more-link-select']" => array("filled" => FALSE),
+        ),
+      ),
+    );
     $form['more_link']['text'] = array(
       '#type' => 'textfield',
+      '#collapsed' => FALSE,
+      '#collapsible' => TRUE,
+      '#states' => array(
+        'invisible' => array(
+          ':input[id=edit-more-link-select]' => array("checked" => FALSE),
+//          "input[name='select']" => array("checked" => FALSE),
+        ),
+//        'collapsed' => array(
+//          "input[id='edit-more-link-select']" => array("checked" => FALSE),
+//        ),
+      ),
       '#title' => t('Text to Show at Bottom of the Block'),
       '#default_value' => $bean->more_link['text'],
     );
     $form['more_link']['path'] = array(
       '#type' => 'textfield',
+      '#collapsed' => FALSE,
+      '#collapsible' => TRUE,
       '#title' => t('URL to link with the Above Text'),
       '#default_value' => $bean->more_link['path'],
+      '#states' => array(
+        'visible' => array(
+         "input[id='edit-more-link-select']" => array("checked" => TRUE),
+        ),
+//        'collapsed' => array(
+//          "input[id='edit-more-link-select']" => array("checked" => TRUE),
+//        ),
+      ),
     );
     $form['#submit'][] = 'bean_custom_content_display_clear_cache';
     return array_merge(parent::values(),$form);
